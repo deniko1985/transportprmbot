@@ -1,2 +1,9 @@
 keyboard_user_choice = ['Автобус', 'Трамвай', 'Маршрутное такси', 'Избранное', 'Помощь']
-keyboard_choice_action = ['Раписание', 'Карта']
+keyboard_choice_action = ['Расписание', 'Карта']
+BUS = 'Автобус'
+TRAMWAY = 'Трамвай'
+TAXI = 'Маршрутное такси'
+FAVOURITES = 'Избранное'
+HELP = 'Помощь'
+TIMETABLE = 'Расписание'
+MAPS = 'Карта'
