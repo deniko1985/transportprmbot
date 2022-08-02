@@ -88,7 +88,8 @@ async def user_choice(message: types.Message, state: FSMContext):
         if user_favourites[2][1] != []:
             await message.answer(text = 'Маршрутное такси:', reply_markup=inline_kb_favourites_taxi)
     elif message.text == HELP:
-        await send_help(message.from_user.id)
+        help = await send_help(message.from_user.id)
+        await message.answer(help)
         return
     else:
         transport_list_button = await Data.parsing_categories(message.text)
@@ -127,7 +128,8 @@ async def schedule(message: types.Message, state: FSMContext):
         await Transport.user_choice_action.set()
         return await message.answer('Хорошо.')        
     elif message.text == MAPS:
-        await Maps.choice_maps(message.from_user.id)
+        maps = await Maps.choice_maps(message.from_user.id)
+        await message.answer(maps)
     else:
         await state.update_data(choice_schedule=message.text)
         number_route = await state.get_data()
