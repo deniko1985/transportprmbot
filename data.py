@@ -1,6 +1,7 @@
 import asyncio
 import re
 
+from keyboard import BUS, TRAMWAY, TAXI
 from config import route_types_tree_collection, full_route_collection, \
     time_table_collection, time_table_route_collection, \
         transport_routes_bus_collection, transport_routes_tramway_collection, \
@@ -73,12 +74,12 @@ class Data():
         transport_type_routes_bus = route_types_tree_collection.find({'children.routeTypeId': 0})
         transport_type_routes_tramway = route_types_tree_collection.find({'children.routeTypeId': 2})
         transport_type_routes_taxi = route_types_tree_collection.find({'children.routeTypeId': 3})
-        if transport == 'Автобус':
+        if transport == BUS:
             for bus_dict in transport_type_routes_bus:
                 for id in bus_dict['children']:
                     if id['routeNumber'] == route_number:                        
                         return id['routeId']                
-        elif transport == 'Трамвай':
+        elif transport == TRAMWAY:
             for tramway_dict in transport_type_routes_tramway:
                 for id in tramway_dict['children']:
                     if id['routeNumber'] == route_number:                        

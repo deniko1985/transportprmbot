@@ -2,6 +2,7 @@ import asyncio
 
 from data import Data    
 from config import user_collection, aiogram_state, aiogram_data
+from keyboard import BUS, TRAMWAY, TAXI
 
 class Favourites():
     
@@ -21,9 +22,9 @@ class Favourites():
         route_number = user_data['choice_number']
         id = await Data.binding_id(transport, route_number)
         transport_add = ''
-        if transport == 'Автобус':
+        if transport == BUS:
             transport_add = 'bus'
-        elif transport == 'Трамвай':
+        elif transport == TRAMWAY:
             transport_add = 'tramway'
         else:
             transport_add = 'taxi'
@@ -33,9 +34,9 @@ class Favourites():
     @staticmethod
     async def choice_favourites(user_id):
         favourites_list = []
-        favourites_bus_list = ['Автобус', []]
-        favourites_tramway_list = ['Трамвай', []]
-        favourites_taxi_list = ['Маршрутное такси', []]
+        favourites_bus_list = [BUS, []]
+        favourites_tramway_list = [TRAMWAY, []]
+        favourites_taxi_list = [TAXI, []]
         print(user_id)
         for favourites_route in user_collection.find({'_id': user_id}):
             if favourites_route.setdefault('bus'):
@@ -52,9 +53,9 @@ class Favourites():
     async def check_favourites(user_id, choice_transport, choice_number):
         list_check_favourites = []
         for favourites_route in user_collection.find({'_id': user_id}):
-            if choice_transport == 'Автобус':
+            if choice_transport == BUS:
                 list_check_favourites += (favourites_route['bus'])
-            elif choice_transport == 'Трамвай':
+            elif choice_transport == TRAMWAY:
                 list_check_favourites += (favourites_route['tramway'])
             else:
                 list_check_favourites += (favourites_route['taxi'])

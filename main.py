@@ -14,7 +14,9 @@ from favourites import Favourites
 from config import dp, bot, user_collection
 from parsing import *
 from data import Data
-from keyboard import keyboard_user_choice, keyboard_choice_action
+from maps import Maps
+from help import send_help
+from keyboard import keyboard_user_choice, keyboard_choice_action, BUS, TRAMWAY, TAXI, FAVOURITES, HELP, TIMETABLE, MAPS
 
 class Transport(StatesGroup):        
     user_choice_transport = State()
@@ -44,7 +46,7 @@ async def user_choice(message: types.Message, state: FSMContext):
     await state.update_data(choice_transport=message.text)	
     transport_list_button = []
     list_button = []
-    if message.text == 'Избранное':
+    if message.text == FAVOURITES:
         list_button_favourites_bus = []
         list_button_favourites_tramway = []
         list_button_favourites_taxi = []
@@ -85,8 +87,8 @@ async def user_choice(message: types.Message, state: FSMContext):
             await message.answer(text = 'Трамвай:', reply_markup=inline_kb_favourites_tramway)
         if user_favourites[2][1] != []:
             await message.answer(text = 'Маршрутное такси:', reply_markup=inline_kb_favourites_taxi)
-    elif message.text == 'Помощь':
-        await send_help(message)
+    elif message.text == HELP:
+        await send_help(message.from_user.id)
         return
     else:
         transport_list_button = await Data.parsing_categories(message.text)
@@ -124,8 +126,8 @@ async def schedule(message: types.Message, state: FSMContext):
     if message.text == 'Вернуться назад':       
         await Transport.user_choice_action.set()
         return await message.answer('Хорошо.')        
-    elif message.text == 'Карта':
-        await maps(message)
+    elif message.text == MAPS:
+        await Maps.choice_maps(message.from_user.id)
     else:
         await state.update_data(choice_schedule=message.text)
         number_route = await state.get_data()
@@ -179,23 +181,6 @@ async def favourites(call: types.CallbackQuery, state: FSMContext):
         await call.message.answer(text = 'No.')
     
     await state.reset_state(with_data=True)
-
-async def maps(message: types.Message):
-    await message.answer(f'Пока не умею.')
-
-async def send_help(message: types.Message):
-    greeting = '''
-	Здравствуй. Я бот для отслеживания общественного траспорта в городе Перми.
-	С моей помощью ты сможешь:
-	\t- узнать расписание транспорта
-	\t- отследить транспорт на карте
-	Но хочу предупредить, что я нахожусь в разработке, поэтому работа может быть нестабильной.
-	'''
-    await message.answer(greeting)
-
-#async def back_button(message: types.Message, state: FSMContext):
-#    await Transport.previous()
-#    await message.answer('Хорошо.')
 
 def register_handlers_main(dp: Dispatcher):
     dp.register_message_handler(send_welcome, commands='start', state="*")

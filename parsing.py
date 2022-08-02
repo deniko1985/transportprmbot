@@ -83,24 +83,6 @@ def sort_type_route_id():
     tramway = [i['routeId'] for i in transport_routes_tramway_collection.find()]
     taxi = [i['routeId'] for i in transport_routes_taxi_collection.find()]
         
-    print(type(collection))
-
-def list_comprehensions():
-    collection = [i for i in full_route_collection.find()]
-
-    print(collection)
-
-# Получение расписания определенного маршрута на конкретной остановке
-
-def time_table_route_bus():
-    bus_count = time_table_collection.count_documents({"stoppointId": 5300})
-    bus = time_table_collection.find({"stoppointId": 5300})
-    print(bus_count)
-    j = []
-    for i in bus:
-        j.append(i["routeTypeId"])
-    print(j)
-
 def data_transport_sort():
     data_transport.delete_many({})
     data = [i['children'] for i in route_types_tree_collection.find({}, {'_id': 0, 'children.routeNumber': 1, 'children.routeTypeId': 1})]
@@ -125,6 +107,7 @@ def data_transport_sort():
         data_transport.insert_one({'_id': id, 'routeNumber': k, 'routeTypeId': j, 'station': d})
     print('Успех!')
 
+# Получение расписания определенного маршрута на конкретной остановке
 def aggregate_collection():
     id_station = set()
     collection = full_route_collection.find()
