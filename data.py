@@ -104,7 +104,16 @@ class Data():
         time_list = [j for i in time for j in i['station'].values()]
         str_answer = " ".join(map(str, time_list))
         time_list_answer = re.findall(r'\b\d{2}[:]\d{2}\b', str_answer)
-        return " ".join(map(str, time_list_answer))
+        first_time = time_list_answer[0][0:2]
+        new_time = []
+        for i in range(len(time_list_answer)):
+            if first_time ==time_list_answer[i][0:2]:
+               new_time.append(f'{time_list_answer[i]} ')
+            else:
+                first_time = time_list_answer[i][0:2]
+                new_time.append('\n')
+                new_time.append(f'{time_list_answer[i]} ')
+        return "".join(new_time)
 
     # Ищем id остановки по направлению и названию.
     @staticmethod

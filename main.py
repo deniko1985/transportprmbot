@@ -16,7 +16,7 @@ from parsing import *
 from data import Data
 from maps import Maps
 from help import send_help
-from keyboard import keyboard_user_choice, keyboard_choice_action, BUS, TRAMWAY, TAXI, FAVOURITES, HELP, TIMETABLE, MAPS
+from keyboard import keyboard_user_choice, keyboard_choice_action, BUS, TRAMWAY, TAXI, FAVOURITES, HELP, TIMETABLE, MAPS, GO_BACK
 
 class Transport(StatesGroup):        
     user_choice_transport = State()
@@ -34,7 +34,7 @@ async def send_welcome(message: types.Message, state: FSMContext):
     favour = Favourites()        
     list_button = []
     user_data = await state.get_data()
-    #await favour.check_user(message.from_user.id, message.chat.id)
+    await favour.check_user(message.from_user.id, message.chat.id)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
     for button in keyboard_user_choice:
         list_button.append(button)    
@@ -59,19 +59,19 @@ async def user_choice(message: types.Message, state: FSMContext):
         bus_favourites = user_favourites[0]
         tram_favourites = user_favourites[1]
         taxi_favourites = user_favourites[2]
-        if user_favourites[0][1] != []:
-            for number_favourites in user_favourites[0][1]:
-                inline_btn_favourites_bus = InlineKeyboardButton(f'{number_favourites}', callback_data=f'{user_favourites[0][0]}, {number_favourites}')
+        if bus_favourites[1] != []:
+            for number_favourites in bus_favourites[1]:
+                inline_btn_favourites_bus = InlineKeyboardButton(f'{number_favourites}', callback_data=f'{bus_favourites[0]}, {number_favourites}')
                 list_button_favourites_bus.append(inline_btn_favourites_bus)
-        if user_favourites[1][1] != []:
-            for number_favourites in user_favourites[1][1]:
-                inline_btn_favourites_tramway = InlineKeyboardButton(f'{number_favourites}', callback_data=f'{user_favourites[1][0]}, {number_favourites}')
+        if tram_favourites[1] != []:
+            for number_favourites in tram_favourites[1]:
+                inline_btn_favourites_tramway = InlineKeyboardButton(f'{number_favourites}', callback_data=f'{tram_favourites[0]}, {number_favourites}')
                 list_button_favourites_tramway.append(inline_btn_favourites_tramway)     
-        if user_favourites[2][1] != []:
-            for number_favourites in user_favourites[2][1]:
-                inline_btn_favourites_taxi = InlineKeyboardButton(f'{number_favourites}', callback_data=f'{user_favourites[2][0]}, {number_favourites}')                      
+        if taxi_favourites[1] != []:
+            for number_favourites in taxi_favourites[1]:
+                inline_btn_favourites_taxi = InlineKeyboardButton(f'{number_favourites}', callback_data=f'{taxi_favourites[0]}, {number_favourites}')                      
                 list_button_favourites_taxi.append(inline_btn_favourites_taxi)                           
-        inline_back = InlineKeyboardButton('Вернуться назад', callback_data='back')
+        inline_back = InlineKeyboardButton(GO_BACK, callback_data='back')
         inline_kb_favourites_bus.add(*list_button_favourites_bus)
         inline_kb_favourites_tramway.add(*list_button_favourites_tramway)
         inline_kb_favourites_taxi.add(*list_button_favourites_taxi)
@@ -79,14 +79,14 @@ async def user_choice(message: types.Message, state: FSMContext):
         await Transport.next()
         print(user_favourites[0][1], user_favourites[1][1], user_favourites[2][1])
         #await message.answer(text = 'Выбери номер маршрута', reply_markup=inline_kb_favourites)
-        if user_favourites[0][1] == [] and user_favourites[1][1] == [] and user_favourites[2][1] == []:
+        if bus_favourites[1] == [] and tram_favourites[1] == [] and taxi_favourites[1] == []:
             await message.answer(text = 'У вас не добавлено ни одного маршрута!')
-        if user_favourites[0][1] != []:
-            await message.answer(text = 'Автобус:', reply_markup=inline_kb_favourites_bus)
-        if user_favourites[1][1] != []:
-            await message.answer(text = 'Трамвай:', reply_markup=inline_kb_favourites_tramway)
-        if user_favourites[2][1] != []:
-            await message.answer(text = 'Маршрутное такси:', reply_markup=inline_kb_favourites_taxi)
+        if bus_favourites[1] != []:
+            await message.answer(text = BUS, reply_markup=inline_kb_favourites_bus)
+        if tram_favourites[1] != []:
+            await message.answer(text = TRAMWAY, reply_markup=inline_kb_favourites_tramway)
+        if taxi_favourites[1] != []:
+            await message.answer(text = TAXI, reply_markup=inline_kb_favourites_taxi)
     elif message.text == HELP:
         help = await send_help(message.from_user.id)
         await message.answer(help)
@@ -97,7 +97,7 @@ async def user_choice(message: types.Message, state: FSMContext):
         for number_route in transport_list_button:
             inline_btn = InlineKeyboardButton(number_route, callback_data=f'{choice_transport}, {number_route}')
             list_button.append(inline_btn)
-        inline_back = InlineKeyboardButton('Вернуться назад', callback_data='back')
+        inline_back = InlineKeyboardButton(GO_BACK, callback_data='back')
         inline_kb = InlineKeyboardMarkup(row_width=8)
         inline_kb.add(*list_button)
         inline_kb.add(inline_back)
@@ -116,7 +116,7 @@ async def choice_action(call: types.CallbackQuery, state: FSMContext):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)    
         for button in keyboard_choice_action:
             list_button.append(button)
-        button_back = types.KeyboardButton('Вернуться назад')
+        button_back = types.KeyboardButton(GO_BACK)
         markup.add(*list_button)
         markup.add(button_back)
         await Transport.next()
@@ -124,7 +124,7 @@ async def choice_action(call: types.CallbackQuery, state: FSMContext):
 
 async def schedule(message: types.Message, state: FSMContext):
 #    await message.answer(reply_markup=types.ReplyKeyboardRemove()) 
-    if message.text == 'Вернуться назад':       
+    if message.text == GO_BACK:       
         await Transport.user_choice_action.set()
         return await message.answer('Хорошо.')        
     elif message.text == MAPS:

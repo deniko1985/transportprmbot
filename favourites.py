@@ -8,13 +8,16 @@ class Favourites():
     
     @staticmethod
     async def check_user(user_id, chat_id):
-        user_clt = user_collection.find({'_id': user_id})
+        user_clt = user_collection.find()
         id_list = []        
-        for cursor in user_clt:
+        for cursor in user_collection.find({}, {'_id': 1}):
+            print(cursor)
             for i in cursor.values():
+                print(i)
                 id_list.append(i)
-        if user_id != id_list[0]:
-            user_collection.insert_one({'_id': user_id, 'chat_id': chat_id})
+                print(id_list)
+        if user_id not in id_list:
+            user_collection.insert_one({'_id': user_id, 'chat_id': chat_id, 'bus': [], 'tramway': [], 'taxi': []})
     
     @staticmethod
     async def add_favourites(user_id, user_data):
@@ -54,10 +57,10 @@ class Favourites():
         list_check_favourites = []
         for favourites_route in user_collection.find({'_id': user_id}):
             if choice_transport == BUS:
-                list_check_favourites += (favourites_route['bus'])
+                list_check_favourites += favourites_route.get('bus')                   
             elif choice_transport == TRAMWAY:
-                list_check_favourites += (favourites_route['tramway'])
+                list_check_favourites += favourites_route.get('tramway')
             else:
-                list_check_favourites += (favourites_route['taxi'])
+                list_check_favourites += favourites_route.get('taxi')                    
         if choice_number not in list_check_favourites:
             return True

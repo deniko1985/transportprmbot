@@ -5,5 +5,6 @@ FAVOURITES = 'Избранное'
 HELP = 'Помощь'
 TIMETABLE = 'Расписание'
 MAPS = 'Карта'
+GO_BACK = 'Вернуться назад'
 keyboard_user_choice = [BUS,TRAMWAY, TAXI, FAVOURITES, HELP]
 keyboard_choice_action = [TIMETABLE, MAPS]
