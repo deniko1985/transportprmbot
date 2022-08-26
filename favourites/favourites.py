@@ -1,28 +1,26 @@
 import asyncio
 
-from data import Data    
-from config import user_collection, aiogram_state, aiogram_data
-from keyboard import BUS, TRAMWAY, TAXI
+from db.db import Data
+from db.config_db import USER_COLLECTION    
+from constants import BUS, TRAMWAY, TAXI
 
 class Favourites():
     
     @staticmethod
     async def check_user(user_id, chat_id):
-        user_clt = user_collection.find()
+        user_clt = USER_COLLECTION.find()
         id_list = []        
-        for cursor in user_collection.find({}, {'_id': 1}):
-            print(cursor)
+        for cursor in USER_COLLECTION.find({}, {'_id': 1}):
             for i in cursor.values():
-                print(i)
                 id_list.append(i)
-                print(id_list)
+        print(id_list)
         if user_id not in id_list:
-            user_collection.insert_one({'_id': user_id, 'chat_id': chat_id, 'bus': [], 'tramway': [], 'taxi': []})
+            USER_COLLECTION.insert_one({'_id': user_id, 'chat_id': chat_id, 'bus': [], 'tramway': [], 'taxi': []})
     
     @staticmethod
     async def add_favourites(user_id, user_data):
-        transport = user_data['choice_transport']
-        route_number = user_data['choice_number']
+        transport = user_data['TRANSPORT_STATE']
+        route_number = user_data['ROUTES_STATE']
         id = await Data.binding_id(transport, route_number)
         transport_add = ''
         if transport == BUS:
@@ -31,7 +29,7 @@ class Favourites():
             transport_add = 'tramway'
         else:
             transport_add = 'taxi'
-        user_collection.update_one({'_id': user_id}, {'$addToSet': {transport_add: route_number}})
+        USER_COLLECTION.update_one({'_id': user_id}, {'$addToSet': {transport_add: route_number}})
         return ('Добавлено!')
 
     @staticmethod
@@ -41,7 +39,7 @@ class Favourites():
         favourites_tramway_list = [TRAMWAY, []]
         favourites_taxi_list = [TAXI, []]
         print(user_id)
-        for favourites_route in user_collection.find({'_id': user_id}):
+        for favourites_route in USER_COLLECTION.find({'_id': user_id}):
             if favourites_route.setdefault('bus'):
                 favourites_bus_list[1] += favourites_route['bus']                
             if favourites_route.setdefault('tramway'):
@@ -55,7 +53,7 @@ class Favourites():
 
     async def check_favourites(user_id, choice_transport, choice_number):
         list_check_favourites = []
-        for favourites_route in user_collection.find({'_id': user_id}):
+        for favourites_route in USER_COLLECTION.find({'_id': user_id}):
             if choice_transport == BUS:
                 list_check_favourites += favourites_route.get('bus')                   
             elif choice_transport == TRAMWAY:

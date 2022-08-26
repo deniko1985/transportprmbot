@@ -1,6 +1,8 @@
 # Main
 config
 config.py
+fullchain.pem
+privkey.pem
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
