@@ -1,0 +1,12 @@
+data/
+transportprmbot/env/
+transportprmbot/__pycache__/
+transportprmbot/app/__pycache__/
+transportprmbot/app/modules/db/__pycache__/
+transportprmbot/app/modules/favourites/__pycache__/
+transportprmbot/app/modules/help/__pycache__/
+transportprmbot/app/modules/message_handlers/__pycache__/
+transportprmbot/config.py
+web_apps_transportprmbot/env/
+web_apps_transportprmbot/__pycache__/
+.git/

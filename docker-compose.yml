@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  transportprmbot:
+    container_name: transportprmbot
+    restart: unless-stopped
+    build: 
+      context: ./transportprmbot/
+      network: host
+    networks:
+      - transportprmbot-network
+    volumes:
+      - /transportprmbot/:/transportprmbot/
+    ports:
+      - 3001:3001
+
+  mongodb_container:
+    image: mongo:latest
+    container_name: mongodb_transportprmbot
+    restart: unless-stopped
+    #environment:
+    #  MONGO_INITDB_ROOT_USERNAME: root
+    #  MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    networks:
+      - transportprmbot-network
+    ports:
+      - 27017:27017
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db
+
+  web_apps:
+    container_name: web_apps_transportprmbot
+    restart: unless-stopped
+    build: 
+      context: ./web_apps_transportprmbot/
+      network: host
+    networks:
+      - transportprmbot-network
+    volumes:
+      - /web_apps_transportprmbot/:/web_apps_transportprmbot/
+    ports:
+      - 5000:5000
+
+networks:
+  transportprmbot-network:
+    driver: bridge
