@@ -1,0 +1,10 @@
+env
+maps
+mongodb
+__pycache__
+test
+web_apps
+.git
+.idea
+.vscode
+.gitignore

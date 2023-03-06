@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+        <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+        <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A5f1d3495e55e1241391eb8ea12569494fef15c4bc51c7d05e93b081b26b3300d&amp;width=100%25&amp;height=100%&amp;lang=ru_RU&amp;scroll=true&amp;"></script>
+        <!--<script type="text/javascript" charset="utf-8" async src="https://geocode-maps.yandex.ru/1.x/?apikey=cfdfece6-8201-45ce-81d4-a2b5d9bc3bfd&geocode={{ latitude[0] }}, {{ longitude[0] }}"></script>-->
+        <script type="text/javascript">
+        ymaps.ready(init);
+        function init() {
+        var myPlacemark = new ymaps.Placemark([58.0105, 56.2502], null, {
+                preset: 'islands#blueDotIcon'
+        });
+        myMap.geoObjects.add(myPlacemark);
+
+        }
+        </script>
+{% endblock %}

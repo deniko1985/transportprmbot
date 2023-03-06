@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="./static/css/style.css" crossorigin="" />
+<link rel="stylesheet" href="./static/css/leaflet.css" crossorigin="" />
+<script src="./static/leaflet.js" crossorigin=""></script>
+<script src="./static/leaflet.rotatedMarker.js" crossorigin=""></script>
+</head>
+<body>
+  <div id="map" class="map"></div>
+<script>
+// Получить текущую позицию
+function success(position) {
+  var map, marker,
+      latitude = position.coords.latitude,
+      longitude = position.coords.longitude;
+      coordinates = [];
+      coordinates.push({{ coordinates }});
+      len = coordinates.length;
+
+  console.log(coordinates);
+  console.log({{ coordinates }});
+
+  // Получаем карту с использованием leaflet
+  // map = L.map('map').setView([58.0105, 56.2502], 13);
+  map = L.map('map').setView([latitude, longitude], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
+
+  // Icon options
+  var iconOptions = {
+    iconUrl: './static/css/images/arrow.png',
+    iconSize: [25, 25]
+  }
+
+  // Creating a custom icon
+  var customIcon = L.icon(iconOptions);
+
+  // Options for the marker
+  // var markerOptions = {
+  //  draggable: true,
+  //  rotationAngle: 180,    
+  //  icon: customIcon
+  //}
+
+  // Маркер с использованием leaflet
+  marker = L.marker([latitude, longitude]).addTo(map).bindPopup('<p>Я здесь</p>').openPopup();
+  for (let i = 0; i < len; i++) {
+      transMarker = new L.marker([coordinates[i], coordinates[i+1]], {rotationAngle: coordinates[i+2], draggable: true, icon: customIcon}).addTo(map);
+      }
+}
+
+// Получить текущую позицию не удалось
+function error() {
+  alert('Получить текущую позицию не удалось. Пожалуйста, разрешите доступ к геолокации.');
+}
+
+document.addEventListener('DOMContentLoaded', function(e) {
+  e.preventDefault();
+  if (!navigator.geolocation) {
+    console.log("Браузер не поддерживает геолокацию");
+  } else {
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+}, false);
+</script>
+</body>
+</html>
