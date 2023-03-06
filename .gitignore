@@ -1,8 +1,11 @@
 # Main
 config
 config.py
-fullchain.pem
-privkey.pem
+env/
+.git/
+.idea/
+.vscode/
+.dockerignore
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
