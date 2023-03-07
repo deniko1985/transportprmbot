@@ -1,8 +1,7 @@
-# import os
-import re
-
-import requests
 from datetime import date
+import re
+import requests
+
 from pymongo import MongoClient
 
 # from db.config_db import ROUTE_TYPES_TREE_COLLECTION,\
@@ -36,8 +35,8 @@ PLACES_COLLECTION_TEST = DB['places_test']
 
 # Получение всех типов маршрутов
 # (id маршрута, вид транспорта, маршрут движения)
-def route_types_tree():
-    # ROUTE_TYPES_TREE_COLLECTION.delete_many({})
+def route_types_tree():    
+    ROUTE_TYPES_TREE_COLLECTION.delete_many({})
     data = requests.get(
         f'https://www.map.gortransperm.ru/json/route-types-tree/{date_today}/'
         ).json()
@@ -49,7 +48,7 @@ def route_types_tree():
 # Получение всех данных маршрутов
 # (по id маршрута получаем данные по остановкам (id остановок, название))
 def full_route():
-    # FULL_ROUTE_COLLECTION.delete_many({})
+    FULL_ROUTE_COLLECTION.delete_many({})
     route = []
     # collection = FULL_ROUTE_COLLECTION.find()
     collection = ROUTE_TYPES_TREE_COLLECTION.find()
@@ -95,6 +94,9 @@ def time_table():
 
 
 def sort_type_transport():
+    TRANSPORT_ROUTES_BUS_COLLECTION.delete_many({})
+    TRANSPORT_ROUTES_TRAMWAY_COLLECTION.delete_many({})
+    TRANSPORT_ROUTES_TAXI_COLLECTION.delete_many({})
     data_bus = []
     data_tramway = []
     data_taxi = []
@@ -114,7 +116,6 @@ def sort_type_transport():
 
 def data_transport_sort():
     DATA_TRANSPORT.delete_many({})
-
     data_number = [i for i in FULL_ROUTE_COLLECTION.find(
         {}, {
                 '_id': 0, 'routeId': 0, 'fwdStoppoints.note': 0,

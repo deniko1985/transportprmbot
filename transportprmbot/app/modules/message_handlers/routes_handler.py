@@ -16,7 +16,9 @@ async def go_to_routes_state(call: types.CallbackQuery, state: FSMContext):
         user_data['TRANSPORT_STATE'], user_data['ROUTES_STATE']
         )
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    app_maps = types.WebAppInfo(url=f'https://app.deniko1985.ml/{route_id}')
+    app_maps = types.WebAppInfo(
+        url=f'https://app.deniko1985.ml/routes/{route_id}'
+        )
     # app_maps = types.WebAppInfo(
     #    url=f'https://www.m.gortransperm.ru/map/{route_id}'
     #    )

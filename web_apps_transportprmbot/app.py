@@ -15,30 +15,35 @@ import uvicorn
 app = Quart(__name__)
 
 
-@app.route('/<bot_data>', methods=['GET'])
-async def data(bot_data):
-    if len(bot_data) < 4:
-        coordinates = await is_location(bot_data)
-    else:
-        location = re.findall(r'\b\d+.\d+\b', bot_data)
-        coordinates = ', '.join(map(str, location))
-    return await render_template('index.html', coordinates=coordinates)
-
-
 @app.route('/')
 async def index():
     return await render_template('index.html')
+
+
+@app.route('/routes/<route_id>', methods=['GET'])
+async def data(route_id):
+    coordinates = await is_location(route_id)
+    return await render_template('routes.html', coordinates=coordinates)
+
+
+@app.route('/geo_station/<geo_data>', methods=['GET'])
+async def get_geo_station(geo_data):
+    location = re.findall(r'\b\d+.\d+\b', geo_data)
+    coordinates = ', '.join(map(str, location))
+    return await render_template('geo_station.html', coordinates=coordinates)
 
 
 async def is_location(id_route):
     coordinates = []
     data = requests.get(f'https://www.map.gortransperm.ru/json/get-moving-autos/{id_route}').json()
     for i in data['autos']:
-        coordinates.append(i['n'])
-        coordinates.append(i['e'])
-        coordinates.append(i['course'])
-        print(coordinates)
-    return ', '.join(map(str, coordinates))
+        coordinate = []
+        coordinate.append(i['n'])
+        coordinate.append(i['e'])
+        coordinate.append(i['course'])
+        coordinates.append(coordinate)
+    # return ', '.join(map(str, coordinates))
+    return coordinates
 
 
 if __name__ == "__main__":

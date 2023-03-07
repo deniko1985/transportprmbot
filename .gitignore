@@ -1,5 +1,6 @@
 data/
 transportprmbot/env/
+transportprmbot/.vscode/
 transportprmbot/__pycache__/
 transportprmbot/app/__pycache__/
 transportprmbot/app/modules/db/__pycache__/

@@ -55,7 +55,7 @@ async def go_to_location_state(
                     )
                 list_button_taxi.append(inline_btn_taxi)
         app_maps = types.WebAppInfo(
-            url=f'https://app.deniko1985.ml/{latitude,longitude}'
+            url=f'https://app.deniko1985.ml/geo_station/{latitude,longitude}'
             )
         button_maps = types.KeyboardButton(LOCATION_STATION, web_app=app_maps)
         inline_kb_bus.add(*list_button_bus)

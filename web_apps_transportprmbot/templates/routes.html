@@ -12,7 +12,7 @@
 <script>
 // Получить текущую позицию
 function success(position) {
-  var map, marker,
+  var map, marker, listValue, pos,
       latitude = position.coords.latitude,
       longitude = position.coords.longitude;
       coordinates = [];
@@ -20,11 +20,44 @@ function success(position) {
       len = coordinates.length;
 
   console.log(coordinates);
-  console.log({{ coordinates }});
 
   // Получаем карту с использованием leaflet
-  map = L.map('map').setView([58.0105, 56.2502], 13);
+  // map = L.map('map').setView([58.0105, 56.2502], 13);
+  map = L.map('map').setView([latitude, longitude], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
+
+  // Icon options
+  var iconOptions = {
+    iconUrl: '../static/css/images/arrow.png',
+    iconSize: [25, 25]
+  }
+
+  // Creating a custom icon
+  var customIcon = L.icon(iconOptions);
+
+  // Icon options
+  var iconOptionsMe = {
+    iconUrl: '../static/css/images/f9.png',
+    iconSize: [25, 25]
+  }
+
+  // Creating a custom icon
+  var customIconMe = L.icon(iconOptionsMe);
+  // Options for the marker
+  // var markerOptions = {
+  //  draggable: true,
+  //  rotationAngle: 180,    
+  //  icon: customIcon
+  //}
+
+  // Маркер с использованием leaflet
+  marker = L.marker([latitude, longitude], {icon: customIconMe}).addTo(map);
+  for (listValue of coordinates) {
+    console.log(listValue);
+    for (pos of listValue) {
+      transMarker = new L.marker([pos[0], pos[1]], {rotationAngle: pos[2], draggable: true, icon: customIcon}).addTo(map);
+    }
+  }
 }
 
 // Получить текущую позицию не удалось

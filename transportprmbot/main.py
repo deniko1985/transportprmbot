@@ -8,12 +8,13 @@ from aiogram.contrib.fsm_storage.mongo import MongoStorage
 # from app.message_handler import register_handlers_message_handler
 from config import TOKEN
 from app.user_state import UserState
-from app.modules.message_handlers.state_handler import state_message_start, \
-    main_state_location_message_handler, location_state_message_handler, \
-    help_state_message_handler, favourites_state_message_handler, \
-    transport_state_message_handler, routes_state_message_handler, \
-    direction_state_message_handler, station_state_message_handler, \
-    timetable_state_message_handler, main_state_message_handler
+from app.modules.message_handlers import state_handler
+# from app.modules.message_handlers.state_handler import state_message_start, \
+#    main_state_location_message_handler, location_state_message_handler, \
+#    help_state_message_handler, favourites_state_message_handler, \
+#    transport_state_message_handler, routes_state_message_handler, \
+#    direction_state_message_handler, station_state_message_handler, \
+#    timetable_state_message_handler, main_state_message_handler
 
 
 bot = Bot(TOKEN, parse_mode=types.ParseMode.HTML)
@@ -35,48 +36,52 @@ WEBAPP_PORT = 3001
 
 def register_handlers_message_handler(dp: Dispatcher):
     dp.register_message_handler(
-        state_message_start,
+        state_handler.state_message_start,
         commands='start', state='*'
         )
     dp.register_message_handler(
-        main_state_message_handler,
+        state_handler.main_state_message_handler,
         state=UserState.MAIN_STATE
         )
     dp.register_message_handler(
-        main_state_location_message_handler,
+        state_handler.main_state_location_message_handler,
         content_types='location',
         state=UserState.MAIN_STATE
         )
     dp.register_message_handler(
-        help_state_message_handler,
+        state_handler.help_state_message_handler,
         state=UserState.HELP_STATE
         )
     dp.register_callback_query_handler(
-        location_state_message_handler,
+        state_handler.location_state_message_handler,
         state=UserState.LOCATION_STATE
         )
     dp.register_callback_query_handler(
-        favourites_state_message_handler,
+        state_handler.favourites_state_message_handler,
         state=UserState.FAVOURITES_STATE
         )
     dp.register_callback_query_handler(
-        transport_state_message_handler,
+        state_handler.transport_state_message_handler,
         state=UserState.TRANSPORT_STATE
         )
     dp.register_message_handler(
-        routes_state_message_handler,
+        state_handler.routes_state_message_handler,
         state=UserState.ROUTES_STATE
         )
     dp.register_message_handler(
-        direction_state_message_handler,
+        state_handler.direction_state_message_handler,
         state=UserState.DIRECTION_STATE
         )
     dp.register_callback_query_handler(
-        station_state_message_handler,
+        state_handler.station_state_message_handler,
         state=UserState.STATION_STATE
         )
     dp.register_callback_query_handler(
-        timetable_state_message_handler,
+        state_handler.choise_timetable_state_message_handler,
+        state=UserState.CHOICE_TIMETABLE_STATE
+        )
+    dp.register_callback_query_handler(
+        state_handler.timetable_state_message_handler,
         state=UserState.TIMETABLE_STATE
         )
 

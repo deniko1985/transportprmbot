@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.dispatcher import FSMContext
 
 from app.user_state import UserState
-from app.modules.favourites.favourites import Favourites
+from app.favourites import Favourites
 from app.constants import BUS, TRAMWAY, TAXI, GO_BACK
 
 

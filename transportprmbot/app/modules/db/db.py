@@ -1,7 +1,9 @@
 # import asyncio
+from datetime import datetime, timedelta
 import re
+import pytz
 
-from app.constants import BUS, TRAMWAY
+from app.constants import BUS, TRAMWAY, YES
 from app.modules.db.config_db import ROUTE_TYPES_TREE_COLLECTION, \
     FULL_ROUTE_COLLECTION, TIME_TRANSPORT, \
     PLACES_COLLECTION, DATA_TRANSPORT
@@ -127,9 +129,13 @@ class Data():
             route_number = number_route['ROUTES_STATE']
             direction = number_route['DIRECTION_STATE']
             station = d_places['STATION_STATE']
+        td = pytz.timezone("Asia/Yekaterinburg")
+        current_date_time = datetime.now(td)
+        current_time = current_date_time.time()
+        tn = current_time.strftime('%H:%M')
         route = await Data.binding_id(transport, route_number)
         id = await Data.sort_id_station(direction, station, route)
-        time = [i for i in TIME_TRANSPORT.aggregate(
+        time_l = [i for i in TIME_TRANSPORT.aggregate(
             [
                 {'$project': {'_id': 1, 'station': 1}},
                 {'$match': {'_id': id}}, {'$unwind': '$station'},
@@ -137,11 +143,12 @@ class Data():
                 {'$project': {'station.scheduledTime': 1}}
             ])
             ]
-        time_list = [j for i in time for j in i['station'].values()]
+        time_list = [j for i in time_l for j in i['station'].values()]
         str_answer = " ".join(map(str, time_list))
         time_list_answer = re.findall(r'\b\d{2}[:]\d{2}\b', str_answer)
         first_time = time_list_answer[0][0:2]
         new_time = []
+        now_time = []
         for i in range(len(time_list_answer)):
             if first_time == time_list_answer[i][0:2]:
                 new_time.append(f'{time_list_answer[i]} ')
@@ -149,7 +156,16 @@ class Data():
                 first_time = time_list_answer[i][0:2]
                 new_time.append('\n')
                 new_time.append(f'{time_list_answer[i]} ')
-        return "".join(new_time)
+            if int(tn[0:2]) <= int(time_list_answer[i][0:2]) \
+                    and int(tn[3:5]) <= int(time_list_answer[i][3:5]):
+                now_time.append(f'{time_list_answer[i]} ')
+        print('==================================')
+        print('number_route: ', number_route['CHOICE_TIMETABLE_STATE'])
+        print('==================================')
+        if number_route['CHOICE_TIMETABLE_STATE'] == YES:
+            return "".join(now_time[0:5])
+        else:
+            return "".join(new_time)
 
     # Ищем id остановки по направлению и названию.
     @staticmethod

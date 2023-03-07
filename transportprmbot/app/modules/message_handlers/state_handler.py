@@ -2,13 +2,13 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 from app.modules.db.db import Data
-from app.modules.favourites.favourites import Favourites
+from app.favourites import Favourites
 from app.modules.message_handlers.main_handler import go_to_main_state
 from app.modules.message_handlers.help_handler import go_to_help_state
 from app.modules.message_handlers.routes_handler import go_to_routes_state
 from app.modules.message_handlers.station_handler import go_to_station_state
 from app.modules.message_handlers.timetable_handler \
-    import go_to_timetable_state
+    import go_to_timetable_state, go_to_timetable_choice
 from app.modules.message_handlers.favourites_handler \
     import go_to_favourites_state
 from app.modules.message_handlers.transport_handler \
@@ -145,7 +145,14 @@ async def station_state_message_handler(
         await go_to_direction_state(call.message, state)
     else:
         await state.update_data(STATION_STATE=call.data)
-        await go_to_timetable_state(call, state)
+        await go_to_timetable_choice(call, state)
+
+
+async def choise_timetable_state_message_handler(
+        call: types.CallbackQuery, state: FSMContext
+        ):
+    await state.update_data(CHOICE_TIMETABLE_STATE=call.data)
+    await go_to_timetable_state(call, state)
 
 
 async def timetable_state_message_handler(
@@ -162,3 +169,4 @@ async def timetable_state_message_handler(
             call.from_user.id, user_data
             )
         await call.message.answer(text=f'{add_user}')
+        await go_to_main_state(call.message, state)

@@ -11,4 +11,5 @@ class UserState(StatesGroup):
     ROUTE_STATE = State()
     DIRECTION_STATE = State()
     STATION_STATE = State()
+    CHOICE_TIMETABLE_STATE = State()
     TIMETABLE_STATE = State()
