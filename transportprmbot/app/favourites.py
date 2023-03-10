@@ -57,16 +57,16 @@ async def get_route_numbers(user_id):
     return favourites
 
 
-async def get_favorites_data(user_id, choice_transport, choice_number):
-    list_check_favourites = []
-    for favourites_route in USER_COLLECTION.find({'_id': user_id}):
-        if choice_transport == BUS:
-            list_check_favourites += favourites_route.get('bus')
-        elif choice_transport == TRAMWAY:
-            list_check_favourites += favourites_route.get('tramway')
+async def get_favorites_data(user_id, transport, number):
+    favourites = []
+    for f_route in USER_COLLECTION.find({'_id': user_id}):
+        if transport == BUS:
+            favourites += f_route.get('bus')
+        elif transport == TRAMWAY:
+            favourites += f_route.get('tramway')
         else:
-            list_check_favourites += favourites_route.get('taxi')
-    if choice_number not in list_check_favourites:
+            favourites += f_route.get('taxi')
+    if number not in favourites:
         return True
 
 
