@@ -22,9 +22,7 @@ async def add_user(user_id, chat_id):
             )
 
 
-async def add_routes(user_id, user_data):
-    transport = user_data['TRANSPORT_STATE']
-    route_number = user_data['ROUTES_STATE']
+async def add_routes(user_id, transport, route_number):
     if transport == BUS:
         transport_add = 'bus'
     elif transport == TRAMWAY:
@@ -56,7 +54,7 @@ async def get_route_numbers(user_id):
     return favourites
 
 
-async def get_favorites_data(user_id, transport, number):
+async def get_favorites_data(user_id, transport, route):
     favourites = []
     for f_route in USER_COLLECTION.find({'_id': user_id}):
         if transport == BUS:
@@ -65,7 +63,7 @@ async def get_favorites_data(user_id, transport, number):
             favourites += f_route.get('tramway')
         else:
             favourites += f_route.get('taxi')
-    if number not in favourites:
+    if route not in favourites:
         return True
 
 

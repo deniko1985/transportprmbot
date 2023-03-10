@@ -28,65 +28,65 @@ WEBAPP_PORT = 3001
 
 def register_handlers_message_handler(dp: Dispatcher):
     dp.register_message_handler(
-        state_handler.state_message_start,
-        commands='start', state='*'
+            state_handler.state_message_start,
+            commands='start', state='*'
         )
     dp.register_message_handler(
-        state_handler.main_state_message_handler,
-        state=UserState.MAIN_STATE
+            state_handler.main_state_message_handler,
+            state=UserState.MAIN_STATE
         )
     dp.register_message_handler(
-        state_handler.main_state_location_message_handler,
-        content_types='location',
-        state=UserState.MAIN_STATE
+            state_handler.main_state_location_message_handler,
+            content_types='location',
+            state=UserState.MAIN_STATE
         )
     dp.register_message_handler(
-        state_handler.help_state_message_handler,
-        state=UserState.HELP_STATE
+            state_handler.help_state_message_handler,
+            state=UserState.HELP_STATE
         )
     dp.register_callback_query_handler(
-        state_handler.location_state_message_handler,
-        state=UserState.LOCATION_STATE
+            state_handler.location_state_message_handler,
+            state=UserState.LOCATION_STATE
         )
     dp.register_callback_query_handler(
-        state_handler.favourites_state_message_handler,
-        state=UserState.FAVOURITES_STATE
+            state_handler.favourites_state_message_handler,
+            state=UserState.FAVOURITES_STATE
         )
     dp.register_message_handler(
-        state_handler.delete_type_favourites_message_handler,
-        state=UserState.DELETE_TYPE_FAVOURITES_STATE
+            state_handler.delete_type_favourites_message_handler,
+            state=UserState.DELETE_TYPE_FAVOURITES_STATE
         )
     dp.register_message_handler(
-        state_handler.delete_route_favourites_message_handler,
-        state=UserState.DELETE_ROUTE_FAVOURITES_STATE
+            state_handler.delete_route_favourites_message_handler,
+            state=UserState.DELETE_ROUTE_FAVOURITES_STATE
         )
     dp.register_message_handler(
-        state_handler.delete_favourites_message_handler,
-        state=UserState.DELETE_FAVOURITES_STATE
+            state_handler.delete_favourites_message_handler,
+            state=UserState.DELETE_FAVOURITES_STATE
         )
     dp.register_callback_query_handler(
-        state_handler.transport_state_message_handler,
-        state=UserState.TRANSPORT_STATE
+            state_handler.transport_state_message_handler,
+            state=UserState.TRANSPORT_STATE
         )
     dp.register_message_handler(
-        state_handler.routes_state_message_handler,
-        state=UserState.ROUTES_STATE
+            state_handler.routes_state_message_handler,
+            state=UserState.ROUTES_STATE
         )
     dp.register_message_handler(
-        state_handler.direction_state_message_handler,
-        state=UserState.DIRECTION_STATE
+            state_handler.direction_state_message_handler,
+            state=UserState.DIRECTION_STATE
         )
     dp.register_callback_query_handler(
-        state_handler.station_state_message_handler,
-        state=UserState.STATION_STATE
+            state_handler.station_state_message_handler,
+            state=UserState.STATION_STATE
         )
     dp.register_callback_query_handler(
-        state_handler.timetable_state_message_handler,
-        state=UserState.TIMETABLE_STATE
+            state_handler.timetable_state_message_handler,
+            state=UserState.TIMETABLE_STATE
         )
     dp.register_callback_query_handler(
-        state_handler.full_timetable_state_message_handler,
-        state=UserState.FULL_TIMETABLE_STATE
+            state_handler.full_timetable_state_message_handler,
+            state=UserState.FULL_TIMETABLE_STATE
         )
 
 
