@@ -34,7 +34,7 @@ async def go_to_timetable_state(call: types.CallbackQuery, state: FSMContext):
         call.from_user.id, user_data['TRANSPORT_STATE'],
         user_data['ROUTES_STATE']
         )
-    if not data:
+    if data:
         inline_kb = InlineKeyboardMarkup(row_width=2)
         inline_btn_1 = InlineKeyboardButton(YES, callback_data=YES)
         inline_btn_2 = InlineKeyboardButton(NO, callback_data=NO)

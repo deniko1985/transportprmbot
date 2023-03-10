@@ -35,6 +35,10 @@ async def go_to_favourites_state(
                 callback_data=f'{f_bus_numbers[0]}, {number_route}'
                 )
             f_bus_buttons.append(f_bus_button)
+        f_bus_kb.add(*f_bus_buttons)
+        await message.answer(
+            text=BUS, reply_markup=f_bus_kb
+            )
     if f_tramway_numbers[1] != []:
         for number_route in f_tramway_numbers[1]:
             f_tramway_button = InlineKeyboardButton(
@@ -44,6 +48,10 @@ async def go_to_favourites_state(
             f_tramway_buttons.append(
                 f_tramway_button
                 )
+        f_tramway_kb.add(*f_tramway_buttons)
+        await message.answer(
+            text=TRAMWAY, reply_markup=f_tramway_kb
+            )
     if f_taxi_numbers[1] != []:
         for number_route in f_taxi_numbers[1]:
             f_taxi_button = InlineKeyboardButton(
@@ -51,26 +59,14 @@ async def go_to_favourites_state(
                 callback_data=f'{f_taxi_numbers[0]}, {number_route}'
                 )
             f_taxi_buttons.append(f_taxi_button)
-    f_bus_kb.add(*f_bus_buttons)
-    f_tramway_kb.add(*f_tramway_buttons)
-    f_taxi_kb.add(*f_taxi_buttons)
-    # await UserState.next()
+        f_taxi_kb.add(*f_taxi_buttons)
+        await message.answer(
+            text=TAXI, reply_markup=f_taxi_kb
+            )
     if f_bus_numbers[1] == []\
             and f_tramway_numbers[1] == []\
             and f_taxi_numbers[1] == []:
         await message.answer(text='У вас не добавлено ни одного маршрута!')
-    if f_bus_numbers[1] != []:
-        await message.answer(
-            text=BUS, reply_markup=f_bus_kb
-            )
-    if f_tramway_numbers[1] != []:
-        await message.answer(
-            text=TRAMWAY, reply_markup=f_tramway_kb
-            )
-    if f_taxi_numbers[1] != []:
-        await message.answer(
-            text=TAXI, reply_markup=f_taxi_kb
-            )
     inline_kb_favourites = InlineKeyboardMarkup(row_width=1)
     inline_back = InlineKeyboardButton(GO_BACK, callback_data=GO_BACK)
     inline_del = InlineKeyboardButton(DELETE, callback_data=DELETE)
