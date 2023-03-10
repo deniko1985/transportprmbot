@@ -30,7 +30,7 @@ async def go_to_timetable_state(call: types.CallbackQuery, state: FSMContext):
         await call.message.answer(
             text=f'{user}', reply_markup=types.ReplyKeyboardRemove()
             )
-    data = await favourites.check_favourites(
+    data = await favourites.get_favorites_data(
         call.from_user.id, user_data['TRANSPORT_STATE'],
         user_data['ROUTES_STATE']
         )

@@ -16,7 +16,7 @@ async def go_to_favourites_state(
         'Избранное:',
         reply_markup=types.ReplyKeyboardRemove()
         )
-    user_numbers = await favourites.get_numbers_favourites(
+    user_numbers = await favourites.get_route_numbers(
         message.from_user.id)
     f_bus_kb = InlineKeyboardMarkup(row_width=5)
     f_tramway_kb = InlineKeyboardMarkup(row_width=5)

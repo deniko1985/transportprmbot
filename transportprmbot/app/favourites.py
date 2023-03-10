@@ -5,12 +5,12 @@ from app.modules.db.config_db import USER_COLLECTION
 from app.constants import BUS, TRAMWAY, TAXI
 
 
-async def check_user(user_id, chat_id):
-    id_list = []
+async def add_user(user_id, chat_id):
+    ids = []
     for cursor in USER_COLLECTION.find({}, {'_id': 1}):
         for i in cursor.values():
-            id_list.append(i)
-    if user_id not in id_list:
+            ids.append(i)
+    if user_id not in ids:
         USER_COLLECTION.insert_one(
             {
                 '_id': user_id,
@@ -22,7 +22,7 @@ async def check_user(user_id, chat_id):
             )
 
 
-async def add_favourites(user_id, user_data):
+async def add_routes(user_id, user_data):
     transport = user_data['TRANSPORT_STATE']
     route_number = user_data['ROUTES_STATE']
     transport_add = ''
@@ -39,25 +39,25 @@ async def add_favourites(user_id, user_data):
     return ('Добавлено!')
 
 
-async def get_numbers_favourites(user_id):
-    favourites_list = []
-    favourites_bus_list = [BUS, []]
-    favourites_tramway_list = [TRAMWAY, []]
-    favourites_taxi_list = [TAXI, []]
+async def get_route_numbers(user_id):
+    favourites = []
+    favourites_buses = [BUS, []]
+    favourites_trams = [TRAMWAY, []]
+    favourites_taxi = [TAXI, []]
     for favourites_route in USER_COLLECTION.find({'_id': user_id}):
         if favourites_route.setdefault('bus'):
-            favourites_bus_list[1] += favourites_route['bus']
+            favourites_buses[1] += favourites_route['bus']
         if favourites_route.setdefault('tramway'):
-            favourites_tramway_list[1] += favourites_route['tramway']
+            favourites_trams[1] += favourites_route['tramway']
         if favourites_route.setdefault('taxi'):
-            favourites_taxi_list[1] += favourites_route['taxi']
-    favourites_list.append(favourites_bus_list)
-    favourites_list.append(favourites_tramway_list)
-    favourites_list.append(favourites_taxi_list)
-    return favourites_list
+            favourites_taxi[1] += favourites_route['taxi']
+    favourites.append(favourites_buses)
+    favourites.append(favourites_trams)
+    favourites.append(favourites_taxi)
+    return favourites
 
 
-async def check_favourites(user_id, choice_transport, choice_number):
+async def get_favorites_data(user_id, choice_transport, choice_number):
     list_check_favourites = []
     for favourites_route in USER_COLLECTION.find({'_id': user_id}):
         if choice_transport == BUS:

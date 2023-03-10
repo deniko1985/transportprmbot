@@ -30,7 +30,7 @@ async def main_state_message_handler(
         message: types.Message,
         state: FSMContext
         ):
-    await favourites.check_user(message.from_user.id, message.chat.id)
+    await favourites.add_user(message.from_user.id, message.chat.id)
     if message.text == HELP:
         await go_to_help_state(message, state)
     if message.text == FAVOURITES:
@@ -191,7 +191,7 @@ async def full_timetable_state_message_handler(
         ):
     if call.data == YES:
         user_data = await state.get_data()
-        add_user = await favourites.add_favourites(
+        add_user = await favourites.add_routes(
             call.from_user.id, user_data
             )
         await call.message.answer(text=f'{add_user}')
