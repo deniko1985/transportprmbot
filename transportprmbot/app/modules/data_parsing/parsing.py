@@ -15,7 +15,7 @@ id_station_list = []
 route = []
 
 
-CLIENT = MongoClient('localhost', 28017)
+CLIENT = MongoClient('localhost', 27017)
 DB = CLIENT['transportprmbot']
 USER_COLLECTION = DB['user']
 ROUTE_TYPES_TREE_COLLECTION = DB['data']
@@ -35,42 +35,40 @@ PLACES_COLLECTION_TEST = DB['places_test']
 
 # Получение всех типов маршрутов
 # (id маршрута, вид транспорта, маршрут движения)
-def route_types_tree():    
+def get_route_types_tree():
     ROUTE_TYPES_TREE_COLLECTION.delete_many({})
     data = requests.get(
         f'https://www.map.gortransperm.ru/json/route-types-tree/{date_today}/'
         ).json()
     ROUTE_TYPES_TREE_COLLECTION.insert_many(data)
-    print('Успех! route_types_tree')
-    return 'Успех! route_types_tree'
+    with open('./log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! route_types_tree''\n')
+    get_full_route()
 
 
 # Получение всех данных маршрутов
 # (по id маршрута получаем данные по остановкам (id остановок, название))
-def full_route():
+def get_full_route():
     FULL_ROUTE_COLLECTION.delete_many({})
     route = []
-    # collection = FULL_ROUTE_COLLECTION.find()
     collection = ROUTE_TYPES_TREE_COLLECTION.find()
-    # global route
     for i in collection:
         for j in i['children']:
             route.append(j['routeId'])
-    print(route)
     for i in route:
         data = requests.get(
             f'https://www.map.gortransperm.ru/json/full-route-new/\
             {date_today}/{i}'
             ).json()
-        # route_list.append(data)
         FULL_ROUTE_COLLECTION.insert_one(data)
-    print('Успех full_route')
-    return 'Успех! route_types_tree'
+    with open('./log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! full_route''\n')
+    get_time_table()
 
 
 # Получение данных по конкретной остановке
 # (какой транспорт и маршрут останавливается на данной остановке, расписание)
-def time_table():
+def get_time_table():
     id_station = set()
     TIME_TABLE_COLLECTION.delete_many({})
     collection = FULL_ROUTE_COLLECTION.find()
@@ -82,15 +80,15 @@ def time_table():
     global id_station_list
     id_station_list = list(id_station)
     id_station_list.sort()
-    print(len(id_station_list))
     for i in id_station_list:
         data = requests.get(
             f'https://www.map.gortransperm.ru/json/stoppoint-time-table/\
             {date_today}/{i}'
             ).json()
         TIME_TABLE_COLLECTION.insert_many(data)
-    print('Успех! time_table')
-    return 'Успех! route_types_tree'
+    with open('./log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! time_table''\n')
+    sort_type_transport()
 
 
 def sort_type_transport():
@@ -111,7 +109,9 @@ def sort_type_transport():
     TRANSPORT_ROUTES_BUS_COLLECTION.insert_one({'routeId': data_bus})
     TRANSPORT_ROUTES_TRAMWAY_COLLECTION.insert_one({'routeId': data_tramway})
     TRANSPORT_ROUTES_TAXI_COLLECTION.insert_one({'routeId': data_taxi})
-    return 'Успех! route_types_tree'
+    with open('./log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! sort_type_transport''\n')
+    data_transport_sort()
 
 
 def data_transport_sort():
@@ -148,8 +148,9 @@ def data_transport_sort():
                 '_id': id, 'routeNumber': k, 'routeTypeId': j, 'station': d
             }
             )
-    print('Успех!')
-    return 'Успех! route_types_tree'
+    with open('./log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! data_transport_sort''\n')
+    aggregate_collection()
 
 
 # Получение расписания определенного маршрута на конкретной остановке
@@ -187,10 +188,12 @@ def aggregate_collection():
             ]
             )]
         TIME_TRANSPORT.insert_one({'_id': id, 'station': time})
-    return 'Успех! route_types_tree'
+    with open('./log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! aggregate_collection''\n')
+    get_geo()
 
 
-def geo():
+def get_geo():
     PLACES_COLLECTION.delete_many({})
     collection = DATA_TRANSPORT.find()
     list_common = []
@@ -255,9 +258,7 @@ def geo():
                 ]
             )]
         list_forward += list_backward
-        # print(list_forward)
         for i in list_forward:
-            # print(i)
             route_id_list.append(str(i['routeId']))
             if i.get('fwdStoppoints'):
                 temp_dict.update(i['fwdStoppoints'])
@@ -284,15 +285,19 @@ def geo():
                     }
             }
         )
-    return 'Успех! route_types_tree'
+    with open('./log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! get_geo''\n')
+    create_index()
 
 
 def create_index():
     PLACES_COLLECTION.create_index([("location", "2dsphere")])
-    return 'Успех! route_types_tree'
+    with open('./log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! create_index''\n')
+    # get_geo_station()
 
 
-def geo_station():
+def get_geo_station():
     collection = PLACES_COLLECTION.find(
         {}, {'fwdStoppoints.stoppointId': 1, 'bkwdStoppoints.stoppointId': 1}
         )
@@ -378,57 +383,15 @@ def geo_station():
                 'location': {'type': 'Point', 'coordinates': location}
             }
             )
-    return 'Успех! route_types_tree'
+    with open('./log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! get_geo_station''\n')
 
 
 def main():
-    res = route_types_tree()
-    if res:
-        res = full_route()
-        if res:
-            res = time_table()
-        else:
-            print('None!')
-            if res:
-                res = sort_type_transport()
-            else:
-                print('None!')
-                if res:
-                    res = data_transport_sort()
-                else:
-                    print('None!')
-                    if res:
-                        res = aggregate_collection()
-                    else:
-                        print('None!')
-                        if res:
-                            res = geo()
-                        else:
-                            print('None!')
-                            if res:
-                                res = create_index()
-                            else:
-                                print('None!')
-                                if res:
-                                    geo_station()
-                                else:
-                                    print('None!')
-    else:
-        print('None!')
+    with open('.log.txt', 'a') as f:
+        f.write(f'{date_today} Успех! get_geo_station''\n')
 
 
 if __name__ == '__main__':
+    # get_route_types_tree()
     main()
-    # route_types_tree()
-    # full_route()
-    # time_table()
-    # sort_type_transport()
-    # data_transport_sort()
-    # time_table_route()
-    # time_table_route_last()
-    # time_table_route_bus()
-    # list_comprehensions()
-    # sort_type_route_id()
-    # aggregate_collection()
-    # geo()
-    # geo_station()

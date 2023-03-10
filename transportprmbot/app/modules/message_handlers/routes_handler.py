@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from app.modules.db.db import Data
+from app.modules.db import db
 from app.user_state import UserState
 from app.constants import TIMETABLE, MAPS, GO_BACK, BACK
 
@@ -12,16 +12,13 @@ async def go_to_routes_state(call: types.CallbackQuery, state: FSMContext):
         TRANSPORT_STATE=number_route[0], ROUTES_STATE=number_route[1]
         )
     user_data = await state.get_data()
-    route_id = await Data.binding_id(
+    route_id = await db.get_route_id(
         user_data['TRANSPORT_STATE'], user_data['ROUTES_STATE']
         )
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     app_maps = types.WebAppInfo(
         url=f'https://app.deniko1985.ml/routes/{route_id}'
         )
-    # app_maps = types.WebAppInfo(
-    #    url=f'https://www.m.gortransperm.ru/map/{route_id}'
-    #    )
     button_maps = types.KeyboardButton(MAPS, web_app=app_maps)
     button_timetable = types.KeyboardButton(TIMETABLE)
     button_go_back = types.KeyboardButton(GO_BACK)

@@ -1,5 +1,7 @@
 FROM python:3.10.6-alpine
 
+RUN pip install flask uvicorn
+
 WORKDIR /bot_web_app
 
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -16,5 +18,5 @@ EXPOSE 5000
 #ENV APP_VERSION=1.0
 #ENV APP_NAME=transportprmbot
 
-CMD [ "python", "app.py", "--host", "127.0.0.1", "--port", "5000"]
+CMD [ "python", "main.py", "--host", "127.0.0.1", "--port", "5000"]
 

@@ -1,20 +1,12 @@
-# import os
-
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils.executor import start_webhook
 from aiogram.contrib.fsm_storage.mongo import MongoStorage
 
-# from app.message_handler import register_handlers_message_handler
+
 from config import TOKEN
 from app.user_state import UserState
 from app.modules.message_handlers import state_handler
-# from app.modules.message_handlers.state_handler import state_message_start, \
-#    main_state_location_message_handler, location_state_message_handler, \
-#    help_state_message_handler, favourites_state_message_handler, \
-#    transport_state_message_handler, routes_state_message_handler, \
-#    direction_state_message_handler, station_state_message_handler, \
-#    timetable_state_message_handler, main_state_message_handler
 
 
 bot = Bot(TOKEN, parse_mode=types.ParseMode.HTML)
@@ -60,6 +52,18 @@ def register_handlers_message_handler(dp: Dispatcher):
         state_handler.favourites_state_message_handler,
         state=UserState.FAVOURITES_STATE
         )
+    dp.register_message_handler(
+        state_handler.delete_type_favourites_message_handler,
+        state=UserState.DELETE_TYPE_FAVOURITES_STATE
+        )
+    dp.register_message_handler(
+        state_handler.delete_route_favourites_message_handler,
+        state=UserState.DELETE_ROUTE_FAVOURITES_STATE
+        )
+    dp.register_message_handler(
+        state_handler.delete_favourites_message_handler,
+        state=UserState.DELETE_FAVOURITES_STATE
+        )
     dp.register_callback_query_handler(
         state_handler.transport_state_message_handler,
         state=UserState.TRANSPORT_STATE
@@ -77,12 +81,12 @@ def register_handlers_message_handler(dp: Dispatcher):
         state=UserState.STATION_STATE
         )
     dp.register_callback_query_handler(
-        state_handler.choise_timetable_state_message_handler,
-        state=UserState.CHOICE_TIMETABLE_STATE
-        )
-    dp.register_callback_query_handler(
         state_handler.timetable_state_message_handler,
         state=UserState.TIMETABLE_STATE
+        )
+    dp.register_callback_query_handler(
+        state_handler.full_timetable_state_message_handler,
+        state=UserState.FULL_TIMETABLE_STATE
         )
 
 

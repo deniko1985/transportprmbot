@@ -8,6 +8,7 @@ transportprmbot/app/modules/favourites/__pycache__/
 transportprmbot/app/modules/help/__pycache__/
 transportprmbot/app/modules/message_handlers/__pycache__/
 transportprmbot/config.py
+transportprmbot/log.txt
 web_apps_transportprmbot/env/
 web_apps_transportprmbot/__pycache__/
 .git/

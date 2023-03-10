@@ -1,9 +1,9 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from app.constants import GO_BACK
 from app.user_state import UserState
 from app.help import send_help
+from app.constants import GO_BACK
 
 
 async def go_to_help_state(

@@ -1,24 +1,25 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from app.modules.db.db import Data
-from app.favourites import Favourites
+from app.modules.db import db
+from app import favourites
 from app.modules.message_handlers.main_handler import go_to_main_state
 from app.modules.message_handlers.help_handler import go_to_help_state
 from app.modules.message_handlers.routes_handler import go_to_routes_state
 from app.modules.message_handlers.station_handler import go_to_station_state
 from app.modules.message_handlers.timetable_handler \
-    import go_to_timetable_state, go_to_timetable_choice
+    import go_to_timetable_state, go_to_timetable
 from app.modules.message_handlers.favourites_handler \
-    import go_to_favourites_state
+    import go_to_favourites_state, go_to_delete_type_favourites, \
+    go_to_delete_route_favourites, go_to_delete_favourites
 from app.modules.message_handlers.transport_handler \
     import go_to_transport_state
 from app.modules.message_handlers.direction_handler \
     import go_to_direction_state
 from app.modules.message_handlers.location_handler \
     import go_to_location_state
-from app.constants import GO_BACK, BACK, YES, NO, BUS, TRAMWAY, TAXI, \
-    FAVOURITES, HELP, LOCATION
+from app.constants import GO_BACK, BACK, YES, BUS, TRAMWAY, TAXI, \
+    FAVOURITES, HELP, LOCATION, DELETE
 
 
 async def state_message_start(message: types.Message, state: FSMContext):
@@ -29,7 +30,7 @@ async def main_state_message_handler(
         message: types.Message,
         state: FSMContext
         ):
-    await Favourites.check_user(message.from_user.id, message.chat.id)
+    await favourites.check_user(message.from_user.id, message.chat.id)
     if message.text == HELP:
         await go_to_help_state(message, state)
     if message.text == FAVOURITES:
@@ -56,8 +57,40 @@ async def favourites_state_message_handler(
         ):
     if call.data == GO_BACK:
         await go_to_main_state(call.message, state)
+    elif call.data == DELETE:
+        await go_to_delete_type_favourites(call.message, state)
     else:
         await go_to_routes_state(call, state)
+
+
+async def delete_type_favourites_message_handler(
+        message: types.Message, state: FSMContext
+        ):
+    await state.update_data(DELETE_TYPE_FAVOURITES_STATE=message.text)
+    if message.text == GO_BACK:
+        await go_to_main_state(message, state)
+    else:
+        await go_to_delete_route_favourites(message, state)
+
+
+async def delete_route_favourites_message_handler(
+        message: types.Message, state: FSMContext
+        ):
+    await state.update_data(DELETE_ROUTE_FAVOURITES_STATE=message.text)
+    user_data = await state.get_data()
+    res = await favourites.delete_routes(message.from_user.id, user_data)
+    message.text = res
+    await go_to_delete_favourites(message, state)
+
+
+async def delete_favourites_message_handler(
+        message: types.Message, state: FSMContext
+        ):
+    await state.update_data(DELETE_FAVOURITES_STATE=message.text)
+    if message.text == YES:
+        await go_to_delete_type_favourites(message, state)
+    else:
+        await go_to_main_state(message, state)
 
 
 async def main_state_location_message_handler(
@@ -81,12 +114,12 @@ async def location_state_message_handler(
             stop_id = user_data[2]
             route_number = user_data[3]
         else:
-            g_data = await Data.get_calldata(user_data)
+            g_data = await db.get_calldata(user_data)
             transport_type = user_data[-1]
             stop_name = g_data
             stop_id = user_data[0]
             route_number = user_data[1]
-        get_direction_location = await Data.get_direction_for_location(
+        get_direction_location = await db.get_direction_for_location(
             transport_type, stop_id, route_number
             )
         await state.update_data(
@@ -129,8 +162,6 @@ async def direction_state_message_handler(
         ):
     if message.text == GO_BACK:
         await go_to_main_state(message, state)
-    elif message.text == BACK:
-        await go_to_routes_state(message, state)
     else:
         await state.update_data(DIRECTION_STATE=message.text)
         await go_to_station_state(message, state)
@@ -145,28 +176,25 @@ async def station_state_message_handler(
         await go_to_direction_state(call.message, state)
     else:
         await state.update_data(STATION_STATE=call.data)
-        await go_to_timetable_choice(call, state)
-
-
-async def choise_timetable_state_message_handler(
-        call: types.CallbackQuery, state: FSMContext
-        ):
-    await state.update_data(CHOICE_TIMETABLE_STATE=call.data)
-    await go_to_timetable_state(call, state)
+        await go_to_timetable(call, state)
 
 
 async def timetable_state_message_handler(
         call: types.CallbackQuery, state: FSMContext
         ):
-    await state.update_data(TIMETABLE_STATE=call.data)
-    if call.data == GO_BACK:
-        await go_to_main_state(call.message, state)
-    elif call.data == NO:
-        await go_to_main_state(call.message, state)
-    elif call.data == YES:
+    await state.update_data(FULL_TIMETABLE_STATE=call.data)
+    await go_to_timetable_state(call, state)
+
+
+async def full_timetable_state_message_handler(
+        call: types.CallbackQuery, state: FSMContext
+        ):
+    if call.data == YES:
         user_data = await state.get_data()
-        add_user = await Favourites.add_favourites(
+        add_user = await favourites.add_favourites(
             call.from_user.id, user_data
             )
         await call.message.answer(text=f'{add_user}')
+        await go_to_main_state(call.message, state)
+    else:
         await go_to_main_state(call.message, state)
