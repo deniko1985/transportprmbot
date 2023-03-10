@@ -5,7 +5,7 @@ from aiogram.dispatcher import FSMContext as FSM
 from app.modules.db import db
 from app.user_state import UserState
 from app import favourites
-from app.constants import YES, NO
+from app.constants import YES, NO, HOME
 
 
 async def go_to_timetable(call: types.CallbackQuery, state: FSM):
@@ -39,6 +39,6 @@ async def go_to_timetable_state(call: types.CallbackQuery, state: FSM):
         await call.message.answer('Добавить маршрут в избранное?', reply_markup=inline_kb)
     await UserState.FULL_TIMETABLE_STATE.set()
     inline_kb = InlineKeyboardMarkup()
-    inline_go_back = InlineKeyboardButton(YES, callback_data=YES)
+    inline_go_back = InlineKeyboardButton(HOME, callback_data=HOME)
     inline_kb.add(inline_go_back)
     await call.message.answer(text='На главную страницу', reply_markup=inline_kb)

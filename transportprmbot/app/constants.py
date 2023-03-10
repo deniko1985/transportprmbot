@@ -14,3 +14,4 @@ NO = 'Нет'
 MAIN_MENU = [BUS, TRAMWAY, TAXI, FAVOURITES, HELP]
 MAIN_ROUTE = [TIMETABLE, MAPS]
 DELETE = 'Удалить номер маршрута'
+HOME = 'Домой'

@@ -13,7 +13,7 @@ from app.modules.message_handlers.transport_handler import go_to_transport_state
 from app.modules.message_handlers.direction_handler import go_to_direction_state
 from app.modules.message_handlers.location_handler import go_to_location_state
 from app.constants import GO_BACK, BACK, YES, BUS, TRAMWAY, TAXI, \
-    FAVOURITES, HELP, LOCATION, DELETE
+    FAVOURITES, HELP, LOCATION, DELETE, HOME
 
 
 async def state_message_start(message: types.Message, state: FSM):
@@ -166,7 +166,7 @@ async def full_timetable_state_message_handler(call: types.CallbackQuery, state:
             )
         await call.message.answer(text=f'{add_route}')
         await go_to_main_state(call.message, state)
-    elif call.data == GO_BACK:
+    elif call.data == HOME:
         await go_to_main_state(call.message, state)
     else:
         await go_to_main_state(call.message, state)
