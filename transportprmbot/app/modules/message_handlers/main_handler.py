@@ -1,5 +1,5 @@
 from aiogram import types
-from aiogram.dispatcher import FSM as FSM
+from aiogram.dispatcher import FSMContext as FSM
 
 from app.user_state import UserState
 from app.constants import MAIN_MENU, LOCATION

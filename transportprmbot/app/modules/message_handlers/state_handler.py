@@ -160,7 +160,7 @@ async def full_timetable_state_message_handler(call: types.CallbackQuery, state:
     if call.data == YES:
         user_data = await state.get_data()
         add_user = await favourites.add_routes(
-            call.from_user.id,
+                call.from_user.id,
                 user_data['TRANSPORT_STATE'],
                 user_data['ROUTES_STATE']
             )
