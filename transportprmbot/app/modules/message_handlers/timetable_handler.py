@@ -27,7 +27,8 @@ async def go_to_timetable_state(call: types.CallbackQuery, state: FSM):
         user = await db.get_timetable(user_data)
         await call.message.answer(text=f'{user}', reply_markup=types.ReplyKeyboardRemove())
     data = await favourites.get_favorites_data(
-            call.from_user.id, user_data['TRANSPORT_STATE'],
+            call.from_user.id,
+            user_data['TRANSPORT_STATE'],
             user_data['ROUTES_STATE']
         )
     if data:
@@ -37,3 +38,7 @@ async def go_to_timetable_state(call: types.CallbackQuery, state: FSM):
         inline_kb.add(inline_btn_1, inline_btn_2)
         await call.message.answer('Добавить маршрут в избранное?', reply_markup=inline_kb)
     await UserState.FULL_TIMETABLE_STATE.set()
+    inline_kb = InlineKeyboardMarkup()
+    inline_go_back = InlineKeyboardButton(YES, callback_data=YES)
+    inline_kb.add(inline_go_back)
+    await call.message.answer(text='На главную страницу', reply_markup=inline_kb)

@@ -159,12 +159,14 @@ async def timetable_state_message_handler(call: types.CallbackQuery, state: FSM)
 async def full_timetable_state_message_handler(call: types.CallbackQuery, state: FSM):
     if call.data == YES:
         user_data = await state.get_data()
-        add_user = await favourites.add_routes(
+        add_route = await favourites.add_routes(
                 call.from_user.id,
                 user_data['TRANSPORT_STATE'],
                 user_data['ROUTES_STATE']
             )
-        await call.message.answer(text=f'{add_user}')
+        await call.message.answer(text=f'{add_route}')
+        await go_to_main_state(call.message, state)
+    elif call.data == GO_BACK:
         await go_to_main_state(call.message, state)
     else:
         await go_to_main_state(call.message, state)
