@@ -11,6 +11,7 @@ from pymongo import MongoClient
 
 dt = date.today()
 date_today = dt.strftime('%d.%m.%Y')
+date_time_today = dt.strftime('%d.%m.%Y %H:%M')
 id_station_list = []
 route = []
 
@@ -42,7 +43,7 @@ def get_route_types_tree():
         ).json()
     ROUTE_TYPES_TREE_COLLECTION.insert_many(data)
     with open('./log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! route_types_tree''\n')
+        f.write(f'{date_time_today} Успех! route_types_tree''\n')
     get_full_route()
 
 
@@ -62,7 +63,7 @@ def get_full_route():
             ).json()
         FULL_ROUTE_COLLECTION.insert_one(data)
     with open('./log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! full_route''\n')
+        f.write(f'{date_time_today} Успех! full_route''\n')
     get_time_table()
 
 
@@ -87,7 +88,7 @@ def get_time_table():
             ).json()
         TIME_TABLE_COLLECTION.insert_many(data)
     with open('./log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! time_table''\n')
+        f.write(f'{date_time_today} Успех! time_table''\n')
     sort_type_transport()
 
 
@@ -110,7 +111,7 @@ def sort_type_transport():
     TRANSPORT_ROUTES_TRAMWAY_COLLECTION.insert_one({'routeId': data_tramway})
     TRANSPORT_ROUTES_TAXI_COLLECTION.insert_one({'routeId': data_taxi})
     with open('./log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! sort_type_transport''\n')
+        f.write(f'{date_time_today} Успех! sort_type_transport''\n')
     data_transport_sort()
 
 
@@ -149,7 +150,7 @@ def data_transport_sort():
             }
             )
     with open('./log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! data_transport_sort''\n')
+        f.write(f'{date_time_today} Успех! data_transport_sort''\n')
     aggregate_collection()
 
 
@@ -189,7 +190,7 @@ def aggregate_collection():
             )]
         TIME_TRANSPORT.insert_one({'_id': id, 'station': time})
     with open('./log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! aggregate_collection''\n')
+        f.write(f'{date_time_today} Успех! aggregate_collection''\n')
     get_geo()
 
 
@@ -286,112 +287,15 @@ def get_geo():
             }
         )
     with open('./log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! get_geo''\n')
+        f.write(f'{date_time_today} Успех! get_geo''\n')
     create_index()
 
 
 def create_index():
     PLACES_COLLECTION.create_index([("location", "2dsphere")])
     with open('./log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! create_index''\n')
-    # get_geo_station()
-
-
-def get_geo_station():
-    collection = PLACES_COLLECTION.find(
-        {}, {'fwdStoppoints.stoppointId': 1, 'bkwdStoppoints.stoppointId': 1}
-        )
-    list_common = []
-    for i in collection:
-        for j in i['fwdStoppoints']:
-            list_common.append(j['stoppointId'])
-        for k in i['bkwdStoppoints']:
-            list_common.append(k['stoppointId'])
-    set_common = set(list_common)
-    list_common = list(set_common)
-    list_common.sort()
-    for j in list_common:
-        # geo_dict = {}
-        route_id_list = []
-        temp_dict = {}
-        location = []
-        list_forward = [i for i in PLACES_COLLECTION.aggregate(
-            [
-                {
-                    '$project':
-                        {
-                            '_id': 0,
-                            'fwdStoppoints': 1,
-                            'routeId': 1
-                        }
-                },
-                {'$unwind': '$fwdStoppoints'},
-                {'$match': {'fwdStoppoints.stoppointId': j}},
-                {
-                    '$project':
-                        {
-                            'routeId': 1,
-                            'fwdStoppoints.stoppointName': 1,
-                            'fwdStoppoints.location': 1
-                        }
-                }
-            ]
-            )]
-        list_backward = [i for i in PLACES_COLLECTION.aggregate(
-            [
-                {
-                    '$project':
-                        {
-                            '_id': 0,
-                            'bkwdStoppoints': 1,
-                            'routeId': 1
-                        }
-                },
-                {'$unwind': '$bkwdStoppoints'},
-                {'$match': {'bkwdStoppoints.stoppointId': j}},
-                {
-                    '$project':
-                        {
-                            'routeId': 1,
-                            'bkwdStoppoints.stoppointName': 1,
-                            'bkwdStoppoints.location': 1
-                        }
-                }
-            ]
-            )]
-        list_forward += list_backward
-        for i in list_forward:
-            route_id_list.append(str(i['routeId']))
-            if i.get('fwdStoppoints'):
-                temp_dict.update(i['fwdStoppoints'])
-            else:
-                temp_dict.update(i['bkwdStoppoints'])
-            stoppoint_name = temp_dict['stoppointName']
-            location_temp = temp_dict['location']
-            location_temp = re.findall(
-                r'(?:([\d.]+)) (?:([\d.]+))', location_temp
-                )
-            location.append(float(location_temp[0][0]))
-            location.append(float(location_temp[0][1]))
-            location = list(set(location))
-        PLACES_COLLECTION_TEST.insert_one(
-            {
-                '_id': j,
-                'stop_id': j,
-                'name': stoppoint_name,
-                'route_id': route_id_list,
-                'location': {'type': 'Point', 'coordinates': location}
-            }
-            )
-    with open('./log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! get_geo_station''\n')
-
-
-def main():
-    with open('.log.txt', 'a') as f:
-        f.write(f'{date_today} Успех! get_geo_station''\n')
+        f.write(f'{date_time_today} Успех! create_index''\n')
 
 
 if __name__ == '__main__':
-    # get_route_types_tree()
-    main()
+    get_route_types_tree()
