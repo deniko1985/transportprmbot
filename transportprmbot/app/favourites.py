@@ -30,8 +30,8 @@ async def add_routes(user_id, transport, route_number):
     else:
         transport_add = 'taxi'
     USER_COLLECTION.update_one(
-        {'_id': user_id},
-        {'$addToSet': {transport_add: route_number}}
+            {'_id': user_id},
+            {'$addToSet': {transport_add: route_number}}
         )
     return ('Добавлено!')
 
