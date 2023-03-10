@@ -78,7 +78,9 @@ async def delete_route_favourites_message_handler(
         ):
     await state.update_data(DELETE_ROUTE_FAVOURITES_STATE=message.text)
     user_data = await state.get_data()
-    res = await favourites.delete_routes(message.from_user.id, user_data)
+    res = await favourites.delete_favorites_routes(
+        message.from_user.id, user_data
+        )
     message.text = res
     await go_to_delete_favourites(message, state)
 

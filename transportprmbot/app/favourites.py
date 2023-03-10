@@ -25,7 +25,6 @@ async def add_user(user_id, chat_id):
 async def add_routes(user_id, user_data):
     transport = user_data['TRANSPORT_STATE']
     route_number = user_data['ROUTES_STATE']
-    transport_add = ''
     if transport == BUS:
         transport_add = 'bus'
     elif transport == TRAMWAY:
@@ -41,19 +40,19 @@ async def add_routes(user_id, user_data):
 
 async def get_route_numbers(user_id):
     favourites = []
-    favourites_buses = [BUS, []]
-    favourites_trams = [TRAMWAY, []]
-    favourites_taxi = [TAXI, []]
-    for favourites_route in USER_COLLECTION.find({'_id': user_id}):
-        if favourites_route.setdefault('bus'):
-            favourites_buses[1] += favourites_route['bus']
-        if favourites_route.setdefault('tramway'):
-            favourites_trams[1] += favourites_route['tramway']
-        if favourites_route.setdefault('taxi'):
-            favourites_taxi[1] += favourites_route['taxi']
-    favourites.append(favourites_buses)
-    favourites.append(favourites_trams)
-    favourites.append(favourites_taxi)
+    buses = [BUS, []]
+    trams = [TRAMWAY, []]
+    taxi = [TAXI, []]
+    for routes in USER_COLLECTION.find({'_id': user_id}):
+        if routes.setdefault('bus'):
+            buses[1] += routes['bus']
+        if routes.setdefault('tramway'):
+            trams[1] += routes['tramway']
+        if routes.setdefault('taxi'):
+            taxi[1] += routes['taxi']
+    favourites.append(buses)
+    favourites.append(trams)
+    favourites.append(taxi)
     return favourites
 
 
@@ -70,7 +69,7 @@ async def get_favorites_data(user_id, transport, number):
         return True
 
 
-async def delete_routes(user_id, message):
+async def delete_favorites_routes(user_id, message):
     if message['DELETE_TYPE_FAVOURITES_STATE'] == BUS:
         transport = 'bus'
     elif message['DELETE_TYPE_FAVOURITES_STATE'] == TRAMWAY:
