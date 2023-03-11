@@ -66,7 +66,7 @@ async def go_to_location_state(message: types.Message, state: FSM):
             inline_kb_taxi.add(*taxi_buttons)
             await message.answer(text=TAXI, reply_markup=inline_kb_taxi)
         app_maps = types.WebAppInfo(
-                url=f'https://app.deniko1985.ml/geo_station/{latitude,longitude}'
+                url=f'https://maps.deniko1985.ml/geo_station/{latitude,longitude}'
             )
         button_maps = types.KeyboardButton(LOCATION_STATION, web_app=app_maps)
         inline_kb = InlineKeyboardMarkup(row_width=1)

@@ -18,7 +18,7 @@ async def go_to_routes_state(call: types.CallbackQuery, state: FSM):
             user_data['ROUTES_STATE']
         )
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    app_maps = types.WebAppInfo(url=f'https://app.deniko1985.ml/routes/{route_id}')
+    app_maps = types.WebAppInfo(url=f'https://maps.deniko1985.ml/routes/{route_id}')
     button_maps = types.KeyboardButton(MAPS, web_app=app_maps)
     button_timetable = types.KeyboardButton(TIMETABLE)
     button_go_back = types.KeyboardButton(GO_BACK)
